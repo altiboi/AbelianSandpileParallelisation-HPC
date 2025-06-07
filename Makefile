@@ -1,13 +1,13 @@
 # Makefile for Abelian Sandpile simulation with PNG output
 
 # Compiler and flags
-CC = gcc
+CC = mpicc
 CFLAGS = -O2 -std=c11 -Wall
 INCLUDE = -I/opt/homebrew/include -L/opt/homebrew/lib
 LDFLAGS = -lpng
 
 # Target executable
-TARGET = sandpile_image
+TARGET = sandpile
 
 # Source files
 SRC = sandpile_serial.c
