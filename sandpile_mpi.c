@@ -123,7 +123,6 @@ int main(int argc, char *argv[])
     int rows_per_proc = N / size;
     int remainder = N % size;
     int local_rows = rows_per_proc + (rank < remainder ? 1 : 0);
-    int start_row = rank * rows_per_proc + (rank < remainder ? rank : remainder);
 
     // Allocate local grid with ghost rows
     int **local_grid = malloc((local_rows + 2) * sizeof(int *));
@@ -191,15 +190,13 @@ int main(int argc, char *argv[])
     int prev_rank = (rank == 0) ? MPI_PROC_NULL : rank - 1;
     int next_rank = (rank == size - 1) ? MPI_PROC_NULL : rank + 1;
 
-    // Start timing
+    // Start mpi timing
     double start_time = MPI_Wtime();
 
     bool global_changed = true;
-    int iteration = 0;
 
     while (global_changed)
     {
-        iteration++;
 
         // Exchange ghost rows
         MPI_Request requests[4];
@@ -289,12 +286,12 @@ int main(int argc, char *argv[])
         MPI_Allreduce(&local_changed, &global_changed, 1, MPI_C_BOOL, MPI_LOR, MPI_COMM_WORLD);
     }
 
+    // End mpi timing
     double end_time = MPI_Wtime();
 
     if (rank == 0)
     {
-        printf("Parallel execution time: %f seconds\n", end_time - start_time);
-        printf("Total iterations: %d\n", iteration);
+        printf("MPI execution time: %f seconds\n", end_time - start_time);
     }
 
     // Gather final results

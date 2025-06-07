@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0)
     {
-        printf("Execution time: %f seconds\n", end_time - start_time);
+        printf("Serial time: %f seconds\n", end_time - start_time);
     }
 
     for (int i = 0; i < N; i++)
