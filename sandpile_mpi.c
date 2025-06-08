@@ -4,6 +4,10 @@
  * This implementation distributes rows across MPI processes using domain decomposition.
  * Each process sends and receives boundary rows (ghost rows) to/from its top and bottom neighbour processes
  * to exchange boundary information during the stabilization process.
+ *
+ * Parallel Jacobi Algorithm(reference)
+ * https://bpb-us-w2.wpmucdn.com/sites.brown.edu/dist/1/376/files/2022/04/Handout-10-Parallel-Jacobi-MPI-code.pdf
+ *
  */
 
 #include <stdio.h>
