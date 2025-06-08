@@ -2,7 +2,7 @@
  * Abelian Sandpile Model - Parallel MPI Implementation
  *
  * This implementation distributes rows across MPI processes using domain decomposition.
- * Each process handles a contiguous block of rows and communicates with neighbors
+ * Each process sends and receives boundary rows (ghost rows) to/from its top and bottom neighbour processes
  * to exchange boundary information during the stabilization process.
  */
 
@@ -190,6 +190,7 @@ int main(int argc, char *argv[])
     int prev_rank = (rank == 0) ? MPI_PROC_NULL : rank - 1;
     int next_rank = (rank == size - 1) ? MPI_PROC_NULL : rank + 1;
 
+    MPI_Barrier(MPI_COMM_WORLD); // Ensure all processes are synchronized before starting
     // Start mpi timing
     double start_time = MPI_Wtime();
 
