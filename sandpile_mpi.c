@@ -296,7 +296,7 @@ int main(int argc, char *argv[])
 
     if (rank == 0)
     {
-        printf("MPI execution time: %f seconds\n", end_time - start_time);
+        printf("MPI execution time (%d processes): %f seconds\n", size, end_time - start_time);
     }
 
     // Gather final results
