@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -N serial_sandpile
+#PBS -P WCHPC
+#PBS -q serial
+#PBS -l select=1:ncpus=1:mpiprocs=1
+#PBS -l walltime=10:00:00
+#PBS -M rtsrec001@myuct.ac.za
+#PBS -o /mnt/lustre/users/student33/serial_out/serial_sandpile.o${PBS_JOBID}
+#PBS -e /mnt/lustre/users/student33/serial_out/serial_sandpile.e${PBS_JOBID}
+#PBS -V
+
+OUTDIR=/mnt/lustre/users/student33/serial_out
+
+mkdir -p "$OUTDIR"
+
+cd "$PBS_O_WORKDIR" || { echo "Cannot cd to $PBS_O_WORKDIR"; exit 1; }
+
+make            
+
+for N in 256 512 1024 2048 4096 8192; do
+    echo "*** Running sandpile with ${N}×${N} grid ***"
+    INPUT="input_${N}.txt"
+    PNG="${OUTDIR}/img${N}s.png"
+
+    ./sandpile "$N" "$N" "$INPUT" "$PNG"
+    echo
+done

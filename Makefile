@@ -39,6 +39,6 @@ $(TARGET_MPI): $(SRC_MPI)
 
 # Clean up build artifacts
 clean:
-	rm -f $(TARGET_SERIAL) $(TARGET_OMP) $(TARGET_MPI) *.o *.png output*.txt
+	rm -f $(TARGET) *.o *.png output*.txt
 
 .PHONY: all clean
