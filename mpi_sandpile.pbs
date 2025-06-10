@@ -1,0 +1,47 @@
+#!/bin/bash
+#PBS -N mpi_sandpile
+#PBS -P WCHPC
+#PBS -q mpi
+#PBS -l select=${NP}:ncpus=24:mpiprocs=24
+#PBS -l walltime=10:00:00
+#PBS -o /mnt/lustre/users/student33/mpi_out/mpi_sandpile.o${PBS_JOBID}
+#PBS -e /mnt/lustre/users/student33/mpi_out/mpi_sandpile.e${PBS_JOBID}
+#PBS -V
+
+OUTDIR=/mnt/lustre/users/student33/mpi_out
+mkdir -p "$OUTDIR"
+cd "$PBS_O_WORKDIR" || exit 1
+
+make sandpile_mpi   # assume your MPI binary is named sandpile_mpi
+
+# Lists of process counts
+PROCS="1 2 4 8 16"
+# Strong scaling at fixed total grid size
+NSTRONG=8192
+# Weak scaling: fix local grid per rank
+NLOCAL=512
+
+# CSV columns vary by section:
+echo "p,time" > ${OUTDIR}/mpi_strong.csv
+for p in $PROCS; do
+  export PBS_NUM_NODES=$p  # for directive expansion
+  RAW=$(mpirun -np $p ./sandpile_mpi \
+        "$NSTRONG" "$NSTRONG" "input_${NSTRONG}.txt" \
+        "${OUTDIR}/img_mpi_strong_${p}.png" 2>&1 \
+        | grep "MPI time")
+  t=$(echo "$RAW" | awk '{print $3}')
+  echo "${p},${t}" >> ${OUTDIR}/mpi_strong.csv
+  echo "  → strong: p=${p}, T=${t}s"
+done
+
+echo "p,N_total,time" > ${OUTDIR}/mpi_weak.csv
+for p in $PROCS; do
+  Ntot=$(( NLOCAL * p ))
+  RAW=$(mpirun -np $p ./sandpile_mpi \
+        "$Ntot" "$Ntot" "input_${Ntot}.txt" \
+        "${OUTDIR}/img_mpi_weak_${p}.png" 2>&1 \
+        | grep "MPI time")
+  t=$(echo "$RAW" | awk '{print $3}')
+  echo "${p},${Ntot},${t}" >> ${OUTDIR}/mpi_weak.csv
+  echo "  → weak: p=${p}, N=${Ntot}, T=${t}s"
+done

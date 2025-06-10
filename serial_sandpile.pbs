@@ -4,24 +4,32 @@
 #PBS -q serial
 #PBS -l select=1:ncpus=1:mpiprocs=1
 #PBS -l walltime=10:00:00
-#PBS -M rtsrec001@myuct.ac.za
-#PBS -o /mnt/lustre/users/student33/serial_out/serial_sandpile.o${PBS_JOBID}
-#PBS -e /mnt/lustre/users/student33/serial_out/serial_sandpile.e${PBS_JOBID}
+#PBS -m abe
+#PBS -M rectorratsaka4@gmail.com
+#PBS -o serial_out/std_out
+#PBS -e serial_out/std_err
 #PBS -V
 
-OUTDIR=/mnt/lustre/users/student33/serial_out
+cd "$PBS_O_WORKDIR" || { echo "Could not cd to $PBS_O_WORKDIR"; exit 1; }
 
-mkdir -p "$OUTDIR"
+OUTDIR="$PBS_O_WORKDIR/serial_out"
 
-cd "$PBS_O_WORKDIR" || { echo "Cannot cd to $PBS_O_WORKDIR"; exit 1; }
+make
 
-make            
+# CSV: grid_size, time_s
+RESULTS=${OUTDIR}/serial_results.csv
+echo "N,time" > "$RESULTS"
 
-for N in 256 512 1024 2048 4096 8192; do
-    echo "*** Running sandpile with ${N}×${N} grid ***"
-    INPUT="input_${N}.txt"
-    PNG="${OUTDIR}/img${N}s.png"
+for N in 128 256 512 1024 2048 4096; do
+  INPUT="input_${N}.txt"
+  PNG="${OUTDIR}/img${N}s.png"
 
-    ./sandpile "$N" "$N" "$INPUT" "$PNG"
-    echo
+  # run & capture the printed time
+  RAW=$("./sandpile" "$N" "$N" "$INPUT" "$PNG" 2>&1 \
+          | grep "Serial time")
+  # RAW looks like: "Serial time: 12.345678 seconds"
+  T=$(echo "$RAW" | awk '{print $3}')
+
+  echo "${N},${T}" >> "$RESULTS"
+  echo "  → N=${N}, time=${T}s"
 done
