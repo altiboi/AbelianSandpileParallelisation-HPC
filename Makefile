@@ -20,6 +20,6 @@ $(TARGET): $(SRC)
 
 # Clean up build artifacts
 clean:
-	rm -f $(TARGET) *.o *.png output*.png
+	rm -f $(TARGET) *.o *.png output*.txt
 
 .PHONY: all clean
