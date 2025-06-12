@@ -1,6 +1,6 @@
-mpicc -O2 -std=c11 -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -o sandpile sandpile_serial.c -lpng
-  → N=128, time=0.254462s
-  → N=256, time=3.347544s
-  → N=512, time=51.503629s
-  → N=1024, time=861.899572s
-  → N=2048, time=16869.725023s
+mpicc -O3 -std=c11 -Wall -I/opt/homebrew/include -L/opt/homebrew/lib -o sandpile sandpile_serial.c -lpng
+  → N=128, time=0.257475s
+  → N=256, time=3.244024s
+  → N=512, time=50.581882s
+  → N=1024, time=801.246605s
+  → N=2048, time=14672.047148s

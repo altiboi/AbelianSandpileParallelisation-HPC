@@ -1,0 +1,44 @@
+#!/bin/bash
+#PBS -N mpi_1_sandpile
+#PBS -P WCHPC
+#PBS -q smp
+#PBS -l select=1:ncpus=24:mpiprocs=24
+#PBS -l walltime=05:00:00
+#PBS -m abe
+#PBS -M rectorratsaka4@gmail.com
+#PBS -o std_out
+#PBS -e std_err
+#PBS -V
+
+cd "$PBS_O_WORKDIR" || { echo "Could not cd to $PBS_O_WORKDIR"; exit 1; }
+
+OUTDIR="$PBS_O_WORKDIR"
+
+make
+
+# CSV: grid_size, procs, time
+RESULTS="${OUTDIR}/mpi_1_results.csv"
+echo "N,Procs,time" > "$RESULTS"
+
+for N in 128 256 512 1024 2048; do
+  INPUT="input_${N}.txt"
+  PNG="${OUTDIR}/img${N}s.png"
+
+  for PROCS in 8 12 16 24; do
+    echo "Running N=${N} with ${PROCS} processes..."
+
+    RAW=$(mpirun -np "$PROCS" ./sandpile "$N" "$N" "$INPUT" "$PNG" 2>&1 | grep "MPI time")
+    
+    # Check if output is valid
+    if [ -z "$RAW" ]; then
+      echo "  → Run failed or no time output. Skipping."
+      continue
+    fi
+
+    T=$(echo "$RAW" | awk '{print $5}')
+    P=$(echo "$RAW" | awk '{print $3}' | tr -d '()')
+
+    echo "${N},${P},${T}" >> "$RESULTS"
+    echo "  → N=${N}, Procs=${P}, time=${T}s"
+  done
+done
