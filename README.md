@@ -65,7 +65,7 @@ make
 
 # Serial baseline (N = 512²)
 
-./sandpile_serial 256 256 input_256.txt img.png
+./sandpile 256 256 input_256.txt img.png
 
 # OpenMP, 24 threads, N = 256²
 
@@ -73,7 +73,7 @@ make
 
 # MPI, 8 ranks, N = 2048²
 
-mpirun -np 8 ./sandpile_mpi 256 256 input_256.txt img.png
+mpirun -np 8 ./sandpile 256 256 input_256.txt img.png
 
 ⸻
 
