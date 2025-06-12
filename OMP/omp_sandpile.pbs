@@ -1,0 +1,35 @@
+#!/bin/bash
+#PBS -N omp_sandpile
+#PBS -P WCHPC
+#PBS -q smp
+#PBS -l select=1:ncpus=24
+#PBS -l walltime=10:00:00
+#PBS -m abe
+#PBS -M mkhsim067@myuct.ac.za
+#PBS -o openmp_out/openmp_sandpile.o${PBS_JOBID}
+#PBS -e openmp_out/openmp_sandpile.e${PBS_JOBID}
+#PBS -V
+
+cd "$PBS_O_WORKDIR" || exit 1
+
+OUTDIR="$PBS_O_WORKDIR/openmp_out"
+mkdir -p "$OUTDIR"
+
+make
+
+RESULTS=${OUTDIR}/openmp_results.csv
+echo "N,threads,time" > "$RESULTS"
+
+THREADS_LIST="2 4 8 12 16 24"
+for N in 128 256 512 1024 2048; do
+  for T in $THREADS_LIST; do
+    export OMP_NUM_THREADS=$T
+    OUTPUT=$("./sandpile_omp" "$N" "$N" "input_${N}.txt" \
+          "${OUTDIR}/output_${N}_${T}.txt" 2>&1)
+    echo "$OUTPUT" > "${OUTDIR}/run_${N}_${T}.txt"
+    RAW=$(echo "$OUTPUT" | grep "OpenMP time")
+    time=$(echo "$RAW" | awk '{print $3}')
+    echo "${N},${T},${time}" >> "$RESULTS"
+    echo "  → N=${N}, threads=${T}, time=${time}s"
+  done
+done
