@@ -65,15 +65,15 @@ make
 
 # Serial baseline (N = 512²)
 
-./SERIAL/sandpile_serial 512 512 input_grids/input_128.txt img.png
+./sandpile_serial 512 512 input_grids/input_128.txt img.png
 
 # OpenMP, 24 threads, N = 2048²
 
-./OMP/sandpile_omp 2048 2048 input_grids/input_128.txt
+./sandpile_omp 2048 2048 input_grids/input_128.txt
 
 # MPI, 8 ranks, N = 2048²
 
-mpirun -np 8 ./MPI/sandpile_mpi 2048 2048 input_grids/input_128.txt img.png
+mpirun -np 8 ./sandpile_mpi 2048 2048 input_grids/input_128.txt img.png
 
 ⸻
 
